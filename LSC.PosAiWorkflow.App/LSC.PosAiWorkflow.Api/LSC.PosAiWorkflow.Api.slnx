@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="../LSC.PosAiWorkflow.Application/LSC.PosAiWorkflow.Application.csproj" />
+  <Project Path="../LSC.PosAiWorkflow.Domain/LSC.PosAiWorkflow.Domain.csproj" />
+  <Project Path="../LSC.PosAiWorkflow.Infrastructure.AI/LSC.PosAiWorkflow.Infrastructure.AI.csproj" />
+  <Project Path="../LSC.PosAiWorkflow.Infrastructure.Persistence/LSC.PosAiWorkflow.Infrastructure.Persistence.csproj" />
+  <Project Path="LSC.PosAiWorkflow.Api.csproj" />
+</Solution>
