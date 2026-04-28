@@ -1,0 +1,112 @@
+<div class="min-h-screen bg-slate-50">
+  <div class="mx-auto max-w-7xl px-4 py-8">
+    <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-slate-900">Pending Approvals</h1>
+        <p class="mt-1 text-sm text-slate-600">Review high-cost or high-risk replenishment recommendations.</p>
+      </div>
+
+      <a routerLink="/decisions" class="text-sm font-medium text-blue-600 hover:underline">
+        ← Back to Decisions
+      </a>
+    </div>
+
+    <div class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <label class="block text-sm font-medium text-slate-700">Reviewer Name</label>
+        <input
+          [ngModel]="reviewerName()"
+          (ngModelChange)="reviewerName.set($event)"
+          class="mt-2 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+        />
+      </div>
+
+      <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+        <label class="block text-sm font-medium text-slate-700">Review Comments</label>
+        <input
+          [ngModel]="reviewComments()"
+          (ngModelChange)="reviewComments.set($event)"
+          class="mt-2 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none focus:border-slate-500"
+        />
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <button
+        type="button"
+        (click)="refresh()"
+        class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow hover:bg-slate-800"
+      >
+        Refresh
+      </button>
+    </div>
+
+    @if (isLoading()) {
+      <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <p class="text-sm text-slate-600">Loading pending approvals...</p>
+      </div>
+    } @else if (errorMessage()) {
+      <div class="mb-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+        {{ errorMessage() }}
+      </div>
+    } @else if (approvals().length > 0) {
+      <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-slate-200">
+            <thead class="bg-slate-100">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Approval</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Decision</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Product</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Status</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Requested By</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Requested</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Scenario</th>
+                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-600">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody class="divide-y divide-slate-100">
+              @for (item of approvals(); track item.approvalRequestId) {
+                <tr class="hover:bg-slate-50">
+                  <td class="px-4 py-4 text-sm text-slate-900">#{{ item.approvalRequestId }}</td>
+                  <td class="px-4 py-4 text-sm text-slate-700">#{{ item.aiDecisionId }}</td>
+                  <td class="px-4 py-4 text-sm text-slate-900">{{ item.productName }}</td>
+                  <td class="px-4 py-4 text-sm text-slate-700">{{ item.status }}</td>
+                  <td class="px-4 py-4 text-sm text-slate-700">{{ item.requestedBy }}</td>
+                  <td class="px-4 py-4 text-sm text-slate-700">{{ item.requestedUtc | date:'medium' }}</td>
+                  <td class="px-4 py-4 text-sm text-slate-700">{{ item.scenarioName || '-' }}</td>
+                  <td class="px-4 py-4 text-sm">
+                    <div class="flex gap-2">
+                      <button
+                        type="button"
+                        (click)="approve(item.approvalRequestId)"
+                        [disabled]="actionInProgressId() === item.approvalRequestId"
+                        class="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+                      >
+                        Approve
+                      </button>
+
+                      <button
+                        type="button"
+                        (click)="reject(item.approvalRequestId)"
+                        [disabled]="actionInProgressId() === item.approvalRequestId"
+                        class="rounded-xl bg-red-600 px-3 py-2 text-xs font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    } @else {
+      <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <p class="text-sm text-slate-600">No pending approvals.</p>
+      </div>
+    }
+  </div>
+</div>
